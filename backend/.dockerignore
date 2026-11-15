@@ -1,0 +1,6 @@
+data_synthetic/
+tests/
+scripts/
+__pycache__/
+.pytest_cache/
+.venv/

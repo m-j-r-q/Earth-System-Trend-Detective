@@ -1,0 +1,75 @@
+{
+  "_note": "bbox is [west, south, east, north] in degrees. The frontend draws these as soft gradient overlays; the backend treats them as strict boxes. 'variables' lists what is cached for the region.",
+  "regions": [
+    {
+      "id": "amazon_arc",
+      "name": "Amazon Arc of Deforestation",
+      "bbox": [-62, -14, -48, -3],
+      "color": "#2e7d32",
+      "biome": "Tropical rainforest",
+      "summary": "The southern and eastern edge of the Amazon, where forest has been cleared for farming and cattle for decades.",
+      "variables": ["T2M", "PRECIP", "PRECTOT", "NDVI", "LST", "EVAP", "SOILM", "AOD"],
+      "default_variables": ["NDVI", "LST"]
+    },
+    {
+      "id": "aral_sea",
+      "name": "Aral Sea Basin",
+      "bbox": [58, 42, 62, 47],
+      "color": "#c0873f",
+      "biome": "Desert and drying lake",
+      "summary": "Once the fourth largest lake in the world, it shrank dramatically after rivers feeding it were diverted for irrigation.",
+      "variables": ["T2M", "PRECIP", "PRECTOT", "NDVI", "LST", "EVAP", "SOILM", "AOD"],
+      "default_variables": ["LST", "NDVI"]
+    },
+    {
+      "id": "sahel",
+      "name": "Sahel",
+      "bbox": [-15, 10, 20, 17],
+      "color": "#d4a017",
+      "biome": "Semi-arid savanna",
+      "summary": "The band south of the Sahara, famous for severe droughts in the 1970s and 80s and a partial recovery of rainfall since.",
+      "variables": ["T2M", "PRECIP", "PRECTOT", "NDVI", "LST", "EVAP", "SOILM", "AOD"],
+      "default_variables": ["PRECTOT", "NDVI"]
+    },
+    {
+      "id": "upper_indus",
+      "name": "Upper Indus and Karakoram",
+      "bbox": [72, 33, 78, 38],
+      "color": "#5c8dd6",
+      "biome": "High mountains and glaciers",
+      "summary": "Home to glaciers that feed the Indus River, which supplies water to hundreds of millions of people. The Karakoram is known for behaving differently from other glacier regions.",
+      "variables": ["T2M", "PRECIP", "PRECTOT", "NDVI", "LST", "EVAP", "SOILM", "AOD"],
+      "default_variables": ["T2M", "LST"]
+    },
+    {
+      "id": "indo_gangetic",
+      "name": "Indo-Gangetic Plain",
+      "bbox": [72, 24, 90, 31],
+      "color": "#8e44ad",
+      "biome": "Densely populated floodplain",
+      "summary": "One of the most heavily populated and irrigated regions on Earth, with some of the world's highest air pollution.",
+      "variables": ["T2M", "PRECIP", "PRECTOT", "NDVI", "LST", "EVAP", "SOILM", "AOD"],
+      "default_variables": ["AOD", "PRECTOT"]
+    },
+    {
+      "id": "central_valley",
+      "name": "California Central Valley",
+      "bbox": [-122.5, 35, -119, 40],
+      "color": "#e67e22",
+      "biome": "Irrigated farmland",
+      "summary": "A major farming region that has gone through several severe droughts and relies heavily on groundwater.",
+      "variables": ["T2M", "PRECIP", "PRECTOT", "NDVI", "LST", "EVAP", "SOILM", "AOD"],
+      "default_variables": ["SOILM", "PRECTOT"]
+    },
+    {
+      "id": "arctic_barents",
+      "name": "Barents-Kara Arctic",
+      "bbox": [30, 70, 80, 80],
+      "color": "#3aa6c9",
+      "biome": "Arctic ocean and sea ice",
+      "summary": "A hotspot of Arctic amplification, where warming is several times faster than the global average.",
+      "variables": ["T2M", "PRECTOT"],
+      "default_variables": ["T2M"]
+    }
+  ]
+}
