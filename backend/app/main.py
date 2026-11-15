@@ -7,7 +7,6 @@ from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
-import pyarrow.parquet as pq
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -36,16 +35,25 @@ def _catalog():
     return variables, {r["id"]: r for r in regions}
 
 
+def _cache_file(region_id: str, var_id: str) -> Path | None:
+    """The cache file for a series: parquet if present, else CSV (for hosts without pyarrow)."""
+    for ext in ("parquet", "csv"):
+        p = data_dir() / f"{region_id}__{var_id}.{ext}"
+        if p.exists():
+            return p
+    return None
+
+
 @lru_cache(maxsize=256)
 def _load(path: str, mtime: float) -> pd.Series:
-    df = pd.read_parquet(path)
+    df = pd.read_csv(path, parse_dates=["date"]) if path.endswith(".csv") else pd.read_parquet(path)
     return pd.Series(df["value"].to_numpy(), index=pd.DatetimeIndex(df["date"]), name="value")
 
 
 def _series(region_id: str, var_id: str) -> pd.Series:
     if not _is_cached(region_id, var_id):
         raise HTTPException(404, f"No cached data for {var_id} in {region_id}.")
-    p = data_dir() / f"{region_id}__{var_id}.parquet"
+    p = _cache_file(region_id, var_id)
     return _load(str(p), p.stat().st_mtime)
 
 
@@ -55,10 +63,14 @@ MIN_MONTHS = 36  # matches the minimum the statistics engine accepts
 def _is_cached(region_id: str, var_id: str) -> bool:
     """True when a usable cache file exists. Partial files (an interrupted download) are
     ignored, so the app never offers a variable that would fail to analyze."""
-    p = data_dir() / f"{region_id}__{var_id}.parquet"
-    if not p.exists():
+    p = _cache_file(region_id, var_id)
+    if p is None:
         return False
     try:
+        if p.suffix == ".csv":
+            with open(p) as f:
+                return sum(1 for _ in f) - 1 >= MIN_MONTHS
+        import pyarrow.parquet as pq
         return pq.ParquetFile(p).metadata.num_rows >= MIN_MONTHS
     except Exception:
         return False
