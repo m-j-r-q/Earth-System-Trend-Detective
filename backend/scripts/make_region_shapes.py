@@ -9,7 +9,7 @@ Source: Natural Earth (public domain), https://github.com/nvkelso/natural-earth-
   - ne_10m_lakes                   : North and South Aral Sea
 
 Each region's outline is a Natural Earth feature, optionally clipped to the analysis box
-(Amazon arc, Upper Indus, Barents). Prints how much of each outline the data box covers.
+(Upper Indus, Aral); the Amazon arc is a band along the basin edge. Prints how much of each outline the data box covers.
 """
 from __future__ import annotations
 
@@ -36,6 +36,13 @@ def pick(features, key, names):
     return unary_union([shape(f["geometry"]) for f in features if f["properties"].get(key) in names])
 
 
+def arc_band(basin, width_deg=3.5):
+    """The 'arc of deforestation' follows the southern and eastern margin of the Amazon forest.
+    There is no standard polygon, so take a band of this width inside the basin edge there."""
+    edge = basin.boundary.intersection(box(-68, -18, -44, 0))
+    return edge.buffer(width_deg).intersection(basin)
+
+
 def main():
     land = load("ne_10m_geography_regions_polys")
     sea = load("ne_10m_geography_marine_polys")
@@ -46,12 +53,12 @@ def main():
         "sahel": (pick(land, "NAME", {"SAHEL"}), "Natural Earth: Sahel"),
         "indo_gangetic": (pick(land, "NAME", {"GANGES PLAIN"}), "Natural Earth: Ganges Plain"),
         "central_valley": (pick(land, "NAME", {"Central Valley"}), "Natural Earth: Central Valley"),
-        "amazon_arc": (pick(land, "NAME", {"AMAZON BASIN"}).intersection(boxes["amazon_arc"]),
-                       "Natural Earth: Amazon Basin, clipped to the southern and eastern arc"),
+        "amazon_arc": (arc_band(pick(land, "NAME", {"AMAZON BASIN"})),
+                       "Natural Earth: band along the southern and eastern edge of the Amazon Basin"),
         "upper_indus": (pick(land, "NAME", {"KARAKORAM RA.", "HINDU KUSH"}).intersection(boxes["upper_indus"]),
                         "Natural Earth: Karakoram and Hindu Kush ranges, clipped to the Upper Indus box"),
-        "arctic_barents": (pick(sea, "name", {"Barents Sea"}).intersection(boxes["arctic_barents"]),
-                           "Natural Earth: Barents Sea, clipped to the analysis box"),
+        "arctic_barents": (pick(sea, "name", {"Barents Sea", "Kara Sea"}),
+                           "Natural Earth: Barents Sea and Kara Sea"),
         "aral_sea": (pick(lakes, "name", {"North Aral Sea", "South Aral Sea"}).buffer(0.75)
                      .intersection(boxes["aral_sea"]),
                      "Natural Earth: Aral Sea lakes, widened by 0.75 degrees to show the basin around them"),
